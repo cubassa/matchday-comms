@@ -63,7 +63,8 @@ function App() {
         padding: "2rem",
       }}
     >
-      <h1>HRBYFC Fixture Tool</h1>
+      <h1>Matchday Comms</h1>
+      <p>Enter fixture details once and generate consistent matchday communications.</p>
 
       <div
         style={{
@@ -93,6 +94,7 @@ function App() {
         <VenuesPage
           venues={venues}
           hospitals={hospitals}
+          setVenues={updateVenues}
         />
       )}
 
