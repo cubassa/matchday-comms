@@ -1,36 +1,64 @@
-import { useState } from "react";
+import {
+  useState,
+  type ChangeEvent,
+} from "react";
 
 import HospitalsPage from "./pages/HospitalsPage";
 import VenuesPage from "./pages/VenuesPage";
+import RefereesPage from "./pages/RefereesPage";
 
 import type { Hospital } from "./types/Hospital";
 import type { Venue } from "./types/Venue";
+import type { Referee } from "./types/Referee";
 
 import {
   loadData,
   saveData,
 } from "./storage/storage";
 
+import {
+  downloadBackup,
+  importBackup,
+} from "./storage/backup";
+
 const VENUE_STORAGE_KEY =
-  "hrbyfc-venues";
+  "matchday-comms-venues";
 
 const HOSPITAL_STORAGE_KEY =
-  "hrbyfc-hospitals";
+  "matchday-comms-hospitals";
+
+const REFEREE_STORAGE_KEY =
+  "matchday-comms-referees";
 
 function App() {
   const [page, setPage] = useState<
-    "venues" | "hospitals"
+    "venues" |
+    "hospitals" |
+    "referees"
   >("venues");
 
-  const [venues, setVenues] = useState<
-    Venue[]
-  >(() =>
-    loadData(VENUE_STORAGE_KEY, [])
-  );
+  const [venues, setVenues] =
+    useState<Venue[]>(() =>
+      loadData(
+        VENUE_STORAGE_KEY,
+        []
+      )
+    );
 
   const [hospitals, setHospitals] =
     useState<Hospital[]>(() =>
-      loadData(HOSPITAL_STORAGE_KEY, [])
+      loadData(
+        HOSPITAL_STORAGE_KEY,
+        []
+      )
+    );
+
+  const [referees, setReferees] =
+    useState<Referee[]>(() =>
+      loadData(
+        REFEREE_STORAGE_KEY,
+        []
+      )
     );
 
   const updateVenues = (
@@ -55,6 +83,63 @@ function App() {
     );
   };
 
+  const updateReferees = (
+    data: Referee[]
+  ) => {
+    setReferees(data);
+
+    saveData(
+      REFEREE_STORAGE_KEY,
+      data
+    );
+  };
+
+  const exportData = () => {
+    downloadBackup({
+      venues,
+      hospitals,
+      referees,
+    });
+  };
+
+  const handleImport = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const file =
+      event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      const data =
+        await importBackup(file);
+
+      updateVenues(
+        data.venues ?? []
+      );
+
+      updateHospitals(
+        data.hospitals ?? []
+      );
+
+      updateReferees(
+        data.referees ?? []
+      );
+
+      alert(
+        "Data imported successfully."
+      );
+    } catch {
+      alert(
+        "Invalid backup file."
+      );
+    }
+
+    event.target.value = "";
+  };
+
   return (
     <div
       style={{
@@ -64,13 +149,19 @@ function App() {
       }}
     >
       <h1>Matchday Comms</h1>
-      <p>Enter fixture details once and generate consistent matchday communications.</p>
+
+      <p>
+        Enter fixture details once and
+        generate consistent matchday
+        communications.
+      </p>
 
       <div
         style={{
           display: "flex",
           gap: "1rem",
           marginBottom: "2rem",
+          flexWrap: "wrap",
         }}
       >
         <button
@@ -88,13 +179,49 @@ function App() {
         >
           Hospitals
         </button>
+
+        <button
+          onClick={() =>
+            setPage("referees")
+          }
+        >
+          Referees
+        </button>
+
+        <button
+          onClick={exportData}
+        >
+          Export Data
+        </button>
+
+        <label
+          style={{
+            border: "1px solid #ccc",
+            padding: "0.4rem 0.8rem",
+            cursor: "pointer",
+            borderRadius: "4px",
+          }}
+        >
+          Import Data
+
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleImport}
+            style={{
+              display: "none",
+            }}
+          />
+        </label>
       </div>
 
       {page === "venues" && (
         <VenuesPage
           venues={venues}
           hospitals={hospitals}
-          setVenues={updateVenues}
+          setVenues={
+            updateVenues
+          }
         />
       )}
 
@@ -103,6 +230,15 @@ function App() {
           hospitals={hospitals}
           setHospitals={
             updateHospitals
+          }
+        />
+      )}
+
+      {page === "referees" && (
+        <RefereesPage
+          referees={referees}
+          setReferees={
+            updateReferees
           }
         />
       )}
