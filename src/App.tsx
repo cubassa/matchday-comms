@@ -6,10 +6,12 @@ import {
 import HospitalsPage from "./pages/HospitalsPage";
 import VenuesPage from "./pages/VenuesPage";
 import RefereesPage from "./pages/RefereesPage";
+import ClubProfilePage from "./pages/ClubProfilePage";
 
 import type { Hospital } from "./types/Hospital";
 import type { Venue } from "./types/Venue";
 import type { Referee } from "./types/Referee";
+import type { ClubProfile } from "./types/ClubProfile";
 
 import {
   loadData,
@@ -30,11 +32,32 @@ const HOSPITAL_STORAGE_KEY =
 const REFEREE_STORAGE_KEY =
   "matchday-comms-referees";
 
+const CLUB_PROFILE_STORAGE_KEY =
+  "matchday-comms-club-profile";
+
+const DEFAULT_PROFILE: ClubProfile = {
+  clubName: "",
+  teamName: "",
+  clubDescription: "",
+
+  managerName: "",
+  managerMobile: "",
+  managerEmail: "",
+
+  homeColours: "",
+
+  groundsInformationText: "",
+  groundsInformationUrl: "",
+
+  badgeImage: "",
+};
+
 function App() {
   const [page, setPage] = useState<
-    "venues" |
-    "hospitals" |
-    "referees"
+    | "venues"
+    | "hospitals"
+    | "referees"
+    | "profile"
   >("venues");
 
   const [venues, setVenues] =
@@ -58,6 +81,14 @@ function App() {
       loadData(
         REFEREE_STORAGE_KEY,
         []
+      )
+    );
+
+  const [clubProfile, setClubProfile] =
+    useState<ClubProfile>(() =>
+      loadData(
+        CLUB_PROFILE_STORAGE_KEY,
+        DEFAULT_PROFILE
       )
     );
 
@@ -94,11 +125,23 @@ function App() {
     );
   };
 
+  const updateClubProfile = (
+    profile: ClubProfile
+  ) => {
+    setClubProfile(profile);
+
+    saveData(
+      CLUB_PROFILE_STORAGE_KEY,
+      profile
+    );
+  };
+
   const exportData = () => {
     downloadBackup({
       venues,
       hospitals,
       referees,
+      clubProfile,
     });
   };
 
@@ -126,6 +169,11 @@ function App() {
 
       updateReferees(
         data.referees ?? []
+      );
+
+      updateClubProfile(
+        data.clubProfile ??
+          DEFAULT_PROFILE
       );
 
       alert(
@@ -160,8 +208,8 @@ function App() {
         style={{
           display: "flex",
           gap: "1rem",
-          marginBottom: "2rem",
           flexWrap: "wrap",
+          marginBottom: "2rem",
         }}
       >
         <button
@@ -189,6 +237,14 @@ function App() {
         </button>
 
         <button
+          onClick={() =>
+            setPage("profile")
+          }
+        >
+          Club Profile
+        </button>
+
+        <button
           onClick={exportData}
         >
           Export Data
@@ -196,10 +252,13 @@ function App() {
 
         <label
           style={{
-            border: "1px solid #ccc",
-            padding: "0.4rem 0.8rem",
+            border:
+              "1px solid #ccc",
+            padding:
+              "0.4rem 0.8rem",
             cursor: "pointer",
-            borderRadius: "4px",
+            borderRadius:
+              "4px",
           }}
         >
           Import Data
@@ -207,7 +266,9 @@ function App() {
           <input
             type="file"
             accept=".json"
-            onChange={handleImport}
+            onChange={
+              handleImport
+            }
             style={{
               display: "none",
             }}
@@ -239,6 +300,17 @@ function App() {
           referees={referees}
           setReferees={
             updateReferees
+          }
+        />
+      )}
+
+      {page === "profile" && (
+        <ClubProfilePage
+          profile={
+            clubProfile
+          }
+          setProfile={
+            updateClubProfile
           }
         />
       )}
