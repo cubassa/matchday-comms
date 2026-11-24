@@ -7,11 +7,13 @@ import HospitalsPage from "./pages/HospitalsPage";
 import VenuesPage from "./pages/VenuesPage";
 import RefereesPage from "./pages/RefereesPage";
 import ClubProfilePage from "./pages/ClubProfilePage";
+import FixturesPage from "./pages/FixturesPage";
 
 import type { Hospital } from "./types/Hospital";
 import type { Venue } from "./types/Venue";
 import type { Referee } from "./types/Referee";
 import type { ClubProfile } from "./types/ClubProfile";
+import type { Fixture } from "./types/Fixture";
 
 import {
   loadData,
@@ -34,6 +36,9 @@ const REFEREE_STORAGE_KEY =
 
 const CLUB_PROFILE_STORAGE_KEY =
   "matchday-comms-club-profile";
+
+const FIXTURE_STORAGE_KEY =
+  "matchday-comms-fixtures";
 
 const DEFAULT_PROFILE: ClubProfile = {
   clubName: "",
@@ -58,6 +63,7 @@ function App() {
     | "hospitals"
     | "referees"
     | "profile"
+    | "fixtures"
   >("venues");
 
   const [venues, setVenues] =
@@ -89,6 +95,14 @@ function App() {
       loadData(
         CLUB_PROFILE_STORAGE_KEY,
         DEFAULT_PROFILE
+      )
+    );
+
+  const [fixtures, setFixtures] =
+    useState<Fixture[]>(() =>
+      loadData(
+        FIXTURE_STORAGE_KEY,
+        []
       )
     );
 
@@ -136,12 +150,24 @@ function App() {
     );
   };
 
+  const updateFixtures = (
+    data: Fixture[]
+  ) => {
+    setFixtures(data);
+
+    saveData(
+      FIXTURE_STORAGE_KEY,
+      data
+    );
+  };
+
   const exportData = () => {
     downloadBackup({
       venues,
       hospitals,
       referees,
       clubProfile,
+      fixtures,
     });
   };
 
@@ -174,6 +200,10 @@ function App() {
       updateClubProfile(
         data.clubProfile ??
           DEFAULT_PROFILE
+      );
+
+      updateFixtures(
+        data.fixtures ?? []
       );
 
       alert(
@@ -245,6 +275,14 @@ function App() {
         </button>
 
         <button
+          onClick={() =>
+            setPage("fixtures")
+          }
+        >
+          Fixtures
+        </button>
+
+        <button
           onClick={exportData}
         >
           Export Data
@@ -312,6 +350,14 @@ function App() {
           setProfile={
             updateClubProfile
           }
+        />
+      )}
+
+      {page === "fixtures" && (
+        <FixturesPage
+          fixtures={fixtures}
+          venues={venues}
+          setFixtures={updateFixtures}
         />
       )}
     </div>

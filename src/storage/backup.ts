@@ -2,12 +2,14 @@ import type { Hospital } from "../types/Hospital";
 import type { Venue } from "../types/Venue";
 import type { Referee } from "../types/Referee";
 import type { ClubProfile } from "../types/ClubProfile";
+import type { Fixture } from "../types/Fixture";
 
 export type BackupData = {
   hospitals: Hospital[];
   venues: Venue[];
   referees: Referee[];
   clubProfile: ClubProfile;
+  fixtures: Fixture[];
 };
 
 export function downloadBackup(
