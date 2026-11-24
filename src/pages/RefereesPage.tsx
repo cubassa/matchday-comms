@@ -148,65 +148,67 @@ export default function RefereesPage({
         )}
       </div>
 
-      <h2>Referees</h2>
+      <div className="section-heading saved-list-heading">
+        <div>
+          <p className="eyebrow">Saved contacts</p>
+          <h2>Referees</h2>
+        </div>
+        <span className="item-count">
+          {referees.length}{" "}
+          {referees.length === 1 ? "referee" : "referees"}
+        </span>
+      </div>
 
       {referees.length === 0 && (
-        <p>No referees added yet.</p>
+        <div className="empty-state">
+          <span className="empty-state-icon" aria-hidden="true">
+            +
+          </span>
+          <h3>No referees yet</h3>
+          <p>Add referee contacts to keep matchday details close at hand.</p>
+        </div>
       )}
 
-      {referees.map((referee) => (
-        <div
-          key={referee.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "1rem",
-            marginBottom: "1rem",
-            borderRadius: "8px",
-          }}
-        >
-          <h3>{referee.name}</h3>
+      <div className="record-list">
+        {referees.map((referee) => (
+          <article className="record-card" key={referee.id}>
+            <div className="record-card-heading">
+              <div>
+                <p className="eyebrow">Match official</p>
+                <h3>{referee.name}</h3>
+              </div>
+            </div>
 
-          <p>
-            <strong>Mobile:</strong>{" "}
-            {referee.mobileNumber ||
-              "Not entered"}
-          </p>
+            <div className="record-details">
+              <p>
+                <span>Mobile</span>
+                <strong>{referee.mobileNumber || "Not entered"}</strong>
+              </p>
+              {referee.notes && (
+                <p>
+                  <span>Notes</span>
+                  <strong>{referee.notes}</strong>
+                </p>
+              )}
+            </div>
 
-          {referee.notes && (
-            <p>
-              <strong>Notes:</strong>{" "}
-              {referee.notes}
-            </p>
-          )}
-
-          <div
-            style={{
-              display: "flex",
-              gap: "0.5rem",
-            }}
-          >
-            <button
-              onClick={() =>
-                editReferee(
-                  referee
-                )
-              }
-            >
-              Edit
-            </button>
-
-            <button
-              onClick={() =>
-                deleteReferee(
-                  referee.id
-                )
-              }
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
+            <div className="record-card-actions">
+              <button
+                className="subtle-button"
+                onClick={() => editReferee(referee)}
+              >
+                Edit
+              </button>
+              <button
+                className="text-button"
+                onClick={() => deleteReferee(referee.id)}
+              >
+                Delete
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
     </>
   );
 }

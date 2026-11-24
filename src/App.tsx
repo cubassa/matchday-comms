@@ -219,147 +219,120 @@ function App() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "1000px",
-        margin: "0 auto",
-        padding: "2rem",
-      }}
-    >
-      <h1>Matchday Comms</h1>
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="brand-lockup">
+          <div className="brand-mark" aria-hidden="true">
+            MC
+          </div>
+          <div>
+            <p className="eyebrow">Matchday operations</p>
+            <h1>Matchday Comms</h1>
+          </div>
+        </div>
+        <p className="app-intro">
+          Your match information, ready for the big day.
+        </p>
+      </header>
 
-      <p>
-        Enter fixture details once and
-        generate consistent matchday
-        communications.
-      </p>
+      <div className="workspace-bar">
+        <nav className="page-navigation" aria-label="Main navigation">
+          <button
+            className={page === "fixtures" ? "nav-button active" : "nav-button"}
+            aria-current={page === "fixtures" ? "page" : undefined}
+            onClick={() => setPage("fixtures")}
+          >
+            Fixtures
+          </button>
+          <button
+            className={page === "venues" ? "nav-button active" : "nav-button"}
+            aria-current={page === "venues" ? "page" : undefined}
+            onClick={() => setPage("venues")}
+          >
+            Venues
+          </button>
+          <button
+            className={page === "hospitals" ? "nav-button active" : "nav-button"}
+            aria-current={page === "hospitals" ? "page" : undefined}
+            onClick={() => setPage("hospitals")}
+          >
+            Hospitals
+          </button>
+          <button
+            className={page === "referees" ? "nav-button active" : "nav-button"}
+            aria-current={page === "referees" ? "page" : undefined}
+            onClick={() => setPage("referees")}
+          >
+            Referees
+          </button>
+          <button
+            className={page === "profile" ? "nav-button active" : "nav-button"}
+            aria-current={page === "profile" ? "page" : undefined}
+            onClick={() => setPage("profile")}
+          >
+            Club Profile
+          </button>
+        </nav>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "1rem",
-          flexWrap: "wrap",
-          marginBottom: "2rem",
-        }}
-      >
-        <button
-          onClick={() =>
-            setPage("venues")
-          }
-        >
-          Venues
-        </button>
-
-        <button
-          onClick={() =>
-            setPage("hospitals")
-          }
-        >
-          Hospitals
-        </button>
-
-        <button
-          onClick={() =>
-            setPage("referees")
-          }
-        >
-          Referees
-        </button>
-
-        <button
-          onClick={() =>
-            setPage("profile")
-          }
-        >
-          Club Profile
-        </button>
-
-        <button
-          onClick={() =>
-            setPage("fixtures")
-          }
-        >
-          Fixtures
-        </button>
-
-        <button
-          onClick={exportData}
-        >
-          Export Data
-        </button>
-
-        <label
-          style={{
-            border:
-              "1px solid #ccc",
-            padding:
-              "0.4rem 0.8rem",
-            cursor: "pointer",
-            borderRadius:
-              "4px",
-          }}
-        >
-          Import Data
-
-          <input
-            type="file"
-            accept=".json"
-            onChange={
-              handleImport
-            }
-            style={{
-              display: "none",
-            }}
-          />
-        </label>
+        <div className="data-actions">
+          <button className="utility-button" onClick={exportData}>
+            Export Data
+          </button>
+          <label className="utility-button import-button">
+            Import Data
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+            />
+          </label>
+        </div>
       </div>
 
-      {page === "venues" && (
-        <VenuesPage
-          venues={venues}
-          hospitals={hospitals}
-          setVenues={
-            updateVenues
-          }
-        />
-      )}
+      <main className="page-panel">
+        <div className="page-content">
+          {page === "venues" && (
+            <VenuesPage
+              venues={venues}
+              hospitals={hospitals}
+              setVenues={updateVenues}
+            />
+          )}
 
-      {page === "hospitals" && (
-        <HospitalsPage
-          hospitals={hospitals}
-          setHospitals={
-            updateHospitals
-          }
-        />
-      )}
+          {page === "hospitals" && (
+            <HospitalsPage
+              hospitals={hospitals}
+              setHospitals={updateHospitals}
+            />
+          )}
 
-      {page === "referees" && (
-        <RefereesPage
-          referees={referees}
-          setReferees={
-            updateReferees
-          }
-        />
-      )}
+          {page === "referees" && (
+            <RefereesPage
+              referees={referees}
+              setReferees={updateReferees}
+            />
+          )}
 
-      {page === "profile" && (
-        <ClubProfilePage
-          profile={
-            clubProfile
-          }
-          setProfile={
-            updateClubProfile
-          }
-        />
-      )}
+          {page === "profile" && (
+            <ClubProfilePage
+              profile={clubProfile}
+              setProfile={updateClubProfile}
+            />
+          )}
 
-      {page === "fixtures" && (
-        <FixturesPage
-          fixtures={fixtures}
-          venues={venues}
-          setFixtures={updateFixtures}
-        />
-      )}
+          {page === "fixtures" && (
+            <FixturesPage
+              fixtures={fixtures}
+              venues={venues}
+              setFixtures={updateFixtures}
+            />
+          )}
+        </div>
+      </main>
+
+      <footer className="app-footer">
+        Keep your matchday details up to date.
+      </footer>
     </div>
   );
 }

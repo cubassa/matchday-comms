@@ -83,43 +83,72 @@ export default function HospitalsPage({
         </button>
       </div>
 
-      <h2>Hospitals</h2>
+      <div className="section-heading saved-list-heading">
+        <div>
+          <p className="eyebrow">Saved contacts</p>
+          <h2>Hospitals</h2>
+        </div>
+        <span className="item-count">
+          {hospitals.length}{" "}
+          {hospitals.length === 1 ? "hospital" : "hospitals"}
+        </span>
+      </div>
 
       {hospitals.length === 0 && (
-        <p>No hospitals added yet.</p>
+        <div className="empty-state">
+          <span className="empty-state-icon" aria-hidden="true">
+            +
+          </span>
+          <h3>No hospitals yet</h3>
+          <p>Add nearby hospitals to keep important contacts handy.</p>
+        </div>
       )}
 
-      {hospitals.map((hospital) => (
-        <div
-          key={hospital.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "1rem",
-            marginBottom: "1rem",
-            borderRadius: "8px",
-          }}
-        >
-          <h3>{hospital.name}</h3>
+      <div className="record-list">
+        {hospitals.map((hospital) => (
+          <article className="record-card" key={hospital.id}>
+            <div className="record-card-heading">
+              <div>
+                <p className="eyebrow">Medical facility</p>
+                <h3>{hospital.name}</h3>
+              </div>
+            </div>
 
-          <p>
-            <strong>Address:</strong>{" "}
-            {hospital.address}
-          </p>
+            <div className="record-details">
+              <p>
+                <span>Address</span>
+                <strong>{hospital.address || "Not entered"}</strong>
+              </p>
+              <p>
+                <span>Postcode</span>
+                <strong>{hospital.postcode || "Not entered"}</strong>
+              </p>
+              {hospital.phone && (
+                <p>
+                  <span>Phone</span>
+                  <strong>{hospital.phone}</strong>
+                </p>
+              )}
+            </div>
 
-          <p>
-            <strong>Postcode:</strong>{" "}
-            {hospital.postcode}
-          </p>
+            {hospital.notes && (
+              <div className="record-notes">
+                <span>Notes</span>
+                <p>{hospital.notes}</p>
+              </div>
+            )}
 
-          <button
-            onClick={() =>
-              deleteHospital(hospital.id)
-            }
-          >
-            Delete
-          </button>
-        </div>
-      ))}
+            <div className="record-card-actions">
+              <button
+                className="text-button"
+                onClick={() => deleteHospital(hospital.id)}
+              >
+                Delete
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
     </>
   );
 }

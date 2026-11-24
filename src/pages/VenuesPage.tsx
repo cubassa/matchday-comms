@@ -192,104 +192,83 @@ export default function VenuesPage({
         )}
       </div>
 
-      <h2>Venues</h2>
+      <div className="section-heading saved-list-heading">
+        <div>
+          <p className="eyebrow">Saved locations</p>
+          <h2>Venues</h2>
+        </div>
+        <span className="item-count">
+          {venues.length} {venues.length === 1 ? "venue" : "venues"}
+        </span>
+      </div>
 
       {venues.length === 0 && (
-        <p>No venues added yet.</p>
+        <div className="empty-state">
+          <span className="empty-state-icon" aria-hidden="true">
+            +
+          </span>
+          <h3>No venues yet</h3>
+          <p>Add a venue to keep its matchday information in one place.</p>
+        </div>
       )}
 
-      {venues.map((venue) => {
-        const hospital =
-          hospitals.find(
-            (h) =>
-              h.id ===
-              venue.nearestHospitalId
+      <div className="record-list">
+        {venues.map((venue) => {
+          const hospital = hospitals.find(
+            (item) => item.id === venue.nearestHospitalId
           );
 
-        return (
-          <div
-            key={venue.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "1rem",
-              marginBottom: "1rem",
-              borderRadius: "8px",
-            }}
-          >
-            <h3>{venue.name}</h3>
+          return (
+            <article className="record-card" key={venue.id}>
+              <div className="record-card-heading">
+                <div>
+                  <p className="eyebrow">Match venue</p>
+                  <h3>{venue.name}</h3>
+                </div>
+              </div>
 
-            <p>
-              <strong>Address:</strong>{" "}
-              {venue.address}
-            </p>
-
-            <p>
-              <strong>
-                Defibrillator:
-              </strong>{" "}
-              {
-                venue.defibrillatorLocation
-              }
-            </p>
-
-            <p>
-              <strong>
-                Nearest Hospital:
-              </strong>{" "}
-              {hospital?.name ??
-                "Not selected"}
-            </p>
-
-            {venue.venueNotes && (
-              <>
+              <div className="record-details">
                 <p>
+                  <span>Address</span>
+                  <strong>{venue.address || "Not entered"}</strong>
+                </p>
+                <p>
+                  <span>Defibrillator</span>
                   <strong>
-                    Venue Information:
+                    {venue.defibrillatorLocation || "Not entered"}
                   </strong>
                 </p>
+                <p>
+                  <span>Nearest hospital</span>
+                  <strong>{hospital?.name ?? "Not selected"}</strong>
+                </p>
+              </div>
 
-                <pre
-                  style={{
-                    whiteSpace:
-                      "pre-wrap",
-                    fontFamily:
-                      "inherit",
-                  }}
+              {venue.venueNotes && (
+                <div className="record-notes">
+                  <span>Venue information</span>
+                  <p>{venue.venueNotes}</p>
+                </div>
+              )}
+
+              <div className="record-card-actions">
+                <button
+                  className="subtle-button"
+                  onClick={() => editVenue(venue)}
                 >
-                  {venue.venueNotes}
-                </pre>
-              </>
-            )}
-
-            <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-              }}
-            >
-              <button
-                onClick={() =>
-                  editVenue(
-                    venue
-                  )
-                }
-              >
-                Edit
-              </button>
-
-              <button
-                onClick={() =>
-                  deleteVenue(
-                    venue.id
-                  )
-                }
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        );
-      })}
+                  Edit
+                </button>
+                <button
+                  className="text-button"
+                  onClick={() => deleteVenue(venue.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </article>
+          );
+        })}
+      </div>
     </>
   );
 }

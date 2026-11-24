@@ -94,75 +94,113 @@ export default function FixturesPage({
 
   return (
     <>
-      <h2>{editingId ? "Edit Fixture" : "Add Fixture"}</h2>
-
-      <div
-        style={{
-          display: "grid",
-          gap: "0.75rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <input
-          type="date"
-          aria-label="Fixture date"
-          value={date}
-          onChange={(event) => setDate(event.target.value)}
-        />
-
-        <input
-          type="time"
-          aria-label="Kick-off time"
-          value={kickOffTime}
-          onChange={(event) =>
-            setKickOffTime(event.target.value)
-          }
-        />
-
-        <input
-          placeholder="Opposition Name"
-          value={oppositionName}
-          onChange={(event) =>
-            setOppositionName(event.target.value)
-          }
-        />
-
-        <input
-          placeholder="Opposition Manager"
-          value={oppositionManager}
-          onChange={(event) =>
-            setOppositionManager(event.target.value)
-          }
-        />
-
-        <select
-          value={venueId}
-          onChange={(event) => setVenueId(event.target.value)}
-        >
-          <option value="">Select venue</option>
-          {venues.map((venue) => (
-            <option key={venue.id} value={venue.id}>
-              {venue.name}
-            </option>
-          ))}
-        </select>
-
-        {venues.length === 0 && (
-          <p>Add a venue before creating a fixture.</p>
-        )}
-
-        <button onClick={saveFixture}>
-          {editingId ? "Update Fixture" : "Add Fixture"}
-        </button>
-
-        {editingId && (
-          <button onClick={clearForm}>Cancel Edit</button>
-        )}
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow">Match schedule</p>
+          <h2>{editingId ? "Edit fixture" : "Add a fixture"}</h2>
+        </div>
       </div>
 
-      <h2>Fixtures</h2>
+      <div className="fixture-form">
+        <label className="fixture-field">
+          <span>Match date</span>
+          <input
+            type="date"
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
+          />
+        </label>
 
-      {fixtures.length === 0 && <p>No fixtures added yet.</p>}
+        <label className="fixture-field">
+          <span>Kick-off time</span>
+          <input
+            type="time"
+            value={kickOffTime}
+            onChange={(event) =>
+              setKickOffTime(event.target.value)
+            }
+          />
+        </label>
+
+        <label className="fixture-field">
+          <span>Opposition</span>
+          <input
+            placeholder="e.g. Riverside FC"
+            value={oppositionName}
+            onChange={(event) =>
+              setOppositionName(event.target.value)
+            }
+          />
+        </label>
+
+        <label className="fixture-field">
+          <span>Opposition manager</span>
+          <input
+            placeholder="Manager name"
+            value={oppositionManager}
+            onChange={(event) =>
+              setOppositionManager(event.target.value)
+            }
+          />
+        </label>
+
+        <label className="fixture-field fixture-field-wide">
+          <span>Venue</span>
+          <select
+            value={venueId}
+            onChange={(event) =>
+              setVenueId(event.target.value)
+            }
+          >
+            <option value="">Select a venue</option>
+            {venues.map((venue) => (
+              <option key={venue.id} value={venue.id}>
+                {venue.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {venues.length === 0 && (
+          <p className="form-hint fixture-field-wide">
+            Add a venue before creating a fixture.
+          </p>
+        )}
+
+        <div className="fixture-form-actions fixture-field-wide">
+          <button className="primary-button" onClick={saveFixture}>
+            {editingId ? "Save changes" : "Add fixture"}
+          </button>
+          {editingId && (
+            <button
+              className="subtle-button"
+              onClick={clearForm}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="section-heading fixture-list-heading">
+        <div>
+          <p className="eyebrow">Your schedule</p>
+          <h2>Fixtures</h2>
+        </div>
+        <span className="item-count">
+          {fixtures.length} {fixtures.length === 1 ? "match" : "matches"}
+        </span>
+      </div>
+
+      {fixtures.length === 0 && (
+        <div className="empty-state">
+          <span className="empty-state-icon" aria-hidden="true">
+            +
+          </span>
+          <h3>No fixtures yet</h3>
+          <p>Add your first match above to start building the schedule.</p>
+        </div>
+      )}
 
       {fixtures.map((fixture) => {
         const venue = venues.find(
@@ -170,45 +208,49 @@ export default function FixturesPage({
         );
 
         return (
-          <div
-            key={fixture.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: "1rem",
-              marginBottom: "1rem",
-              borderRadius: "8px",
-            }}
-          >
-            <h3>{fixture.oppositionName}</h3>
+          <article className="fixture-card" key={fixture.id}>
+            <div className="fixture-card-heading">
+              <div>
+                <p className="eyebrow">Away match</p>
+                <h3>{fixture.oppositionName}</h3>
+              </div>
+              <span className="kickoff-badge">
+                {fixture.kickOffTime}
+              </span>
+            </div>
 
-            <p>
-              <strong>Date:</strong> {fixture.date}
-            </p>
+            <div className="fixture-details">
+              <p>
+                <span>Date</span>
+                <strong>{fixture.date}</strong>
+              </p>
+              <p>
+                <span>Venue</span>
+                <strong>{venue?.name ?? "Not selected"}</strong>
+              </p>
+              <p>
+                <span>Opposition manager</span>
+                <strong>
+                  {fixture.oppositionManager || "Not entered"}
+                </strong>
+              </p>
+            </div>
 
-            <p>
-              <strong>Kick-off:</strong> {fixture.kickOffTime}
-            </p>
-
-            <p>
-              <strong>Opposition Manager:</strong>{" "}
-              {fixture.oppositionManager || "Not entered"}
-            </p>
-
-            <p>
-              <strong>Venue:</strong>{" "}
-              {venue?.name ?? "Not selected"}
-            </p>
-
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <button onClick={() => editFixture(fixture)}>
+            <div className="fixture-card-actions">
+              <button
+                className="subtle-button"
+                onClick={() => editFixture(fixture)}
+              >
                 Edit
               </button>
-
-              <button onClick={() => deleteFixture(fixture.id)}>
+              <button
+                className="text-button"
+                onClick={() => deleteFixture(fixture.id)}
+              >
                 Delete
               </button>
             </div>
-          </div>
+          </article>
         );
       })}
     </>
