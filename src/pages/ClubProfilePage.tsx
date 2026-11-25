@@ -19,42 +19,6 @@ export default function ClubProfilePage({
     });
   };
 
-  const handlePaste = async (
-    event: React.ClipboardEvent<HTMLDivElement>
-    ) => {
-    const items =
-        event.clipboardData.items;
-
-    for (const item of items) {
-        if (
-        item.type.startsWith("image/")
-        ) {
-        const file =
-            item.getAsFile();
-
-        if (!file) {
-            return;
-        }
-
-        const reader =
-            new FileReader();
-
-        reader.onload = () => {
-            setProfile({
-            ...profile,
-            badgeImage:
-                reader.result as string,
-            });
-        };
-
-        reader.readAsDataURL(file);
-
-        event.preventDefault();
-        return;
-        }
-    }
-    };
-
   const handleBadgeUpload = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {

@@ -9,4 +9,6 @@ export type Venue = {
   nearestHospitalId: string;
 
   venueNotes: string;
+
+  mapImage?: string;
 };

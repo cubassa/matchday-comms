@@ -296,6 +296,7 @@ textarea:focus-visible,
 .fixture-form-actions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 9px;
   padding-top: 2px;
 }
@@ -331,10 +332,117 @@ textarea:focus-visible,
   box-shadow: none;
 }
 
+.list-heading-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.record-dialog {
+  width: min(680px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: min(90vh, 900px);
+  padding: 0;
+  border: 1px solid #dce5de;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 24px 70px #10281d38;
+}
+
+.record-dialog::backdrop {
+  background: #13251d80;
+  backdrop-filter: blur(2px);
+}
+
+.record-dialog-content {
+  max-height: min(90vh, 900px);
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.record-dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.record-dialog-heading h2 {
+  margin: 0;
+  color: var(--green-900);
+  font-size: 21px;
+}
+
+.page-content button.dialog-close-button {
+  display: grid;
+  width: 36px;
+  min-height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  padding: 0;
+  border-color: var(--line);
+  background: #fff;
+  color: #64736a;
+  font-size: 22px;
+}
+
+.page-content button.dialog-close-button:hover {
+  border-color: #cbd9ce;
+  background: var(--green-50);
+  box-shadow: none;
+}
+
+.record-form {
+  display: grid;
+  gap: 12px;
+}
+
+.record-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding-top: 5px;
+}
+
 .form-hint {
   margin: -5px 0 0;
   color: var(--muted);
   font-size: 12px;
+}
+
+.form-error {
+  margin: -5px 0 0;
+  color: #9b4e45;
+  font-size: 12px;
+}
+
+.venue-map-preview,
+.venue-map {
+  display: grid;
+  justify-items: start;
+  gap: 9px;
+}
+
+.venue-map-preview img,
+.venue-map img {
+  display: block;
+  max-width: 100%;
+  max-height: 360px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  object-fit: contain;
+}
+
+.venue-map > span {
+  color: #89968e;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .fixture-list-heading {
@@ -342,7 +450,7 @@ textarea:focus-visible,
 }
 
 .saved-list-heading {
-  margin-top: 34px;
+  margin-top: 0;
 }
 
 .record-list {

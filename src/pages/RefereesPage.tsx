@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Referee } from "../types/Referee";
+import RecordDialog from "../components/RecordDialog";
 
 type Props = {
   referees: Referee[];
@@ -17,8 +18,10 @@ export default function RefereesPage({
   const [mobileNumber, setMobileNumber] =
     useState("");
   const [notes, setNotes] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
 
   const clearForm = () => {
+    setFormOpen(false);
     setEditingId(null);
     setName("");
     setMobileNumber("");
@@ -62,6 +65,12 @@ export default function RefereesPage({
       referee.mobileNumber
     );
     setNotes(referee.notes);
+    setFormOpen(true);
+  };
+
+  const addReferee = () => {
+    clearForm();
+    setFormOpen(true);
   };
 
   const deleteReferee = (
@@ -89,75 +98,76 @@ export default function RefereesPage({
 
   return (
     <>
-      <h2>
-        {editingId
-          ? "Edit Referee"
-          : "Add Referee"}
-      </h2>
-
-      <div
-        style={{
-          display: "grid",
-          gap: "0.75rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <input
-          placeholder="Referee Name"
-          value={name}
-          onChange={(e) =>
-            setName(e.target.value)
-          }
-        />
-
-        <input
-          placeholder="Mobile Number"
-          value={mobileNumber}
-          onChange={(e) =>
-            setMobileNumber(
-              e.target.value
-            )
-          }
-        />
-
-        <textarea
-          rows={4}
-          placeholder="Notes"
-          value={notes}
-          onChange={(e) =>
-            setNotes(
-              e.target.value
-            )
-          }
-        />
-
-        <button
-          onClick={saveReferee}
-        >
-          {editingId
-            ? "Update Referee"
-            : "Add Referee"}
-        </button>
-
-        {editingId && (
-          <button
-            onClick={clearForm}
-          >
-            Cancel Edit
-          </button>
-        )}
-      </div>
-
       <div className="section-heading saved-list-heading">
         <div>
           <p className="eyebrow">Saved contacts</p>
           <h2>Referees</h2>
         </div>
-        <span className="item-count">
-          {referees.length}{" "}
-          {referees.length === 1 ? "referee" : "referees"}
-        </span>
+        <div className="list-heading-actions">
+          <span className="item-count">
+            {referees.length}{" "}
+            {referees.length === 1 ? "referee" : "referees"}
+          </span>
+          <button className="primary-button" onClick={addReferee}>
+            Add referee
+          </button>
+        </div>
       </div>
+
+      <RecordDialog
+        open={formOpen}
+        title={editingId ? "Edit referee" : "Add referee"}
+        onClose={clearForm}
+      >
+        <div className="record-dialog-content">
+          <div className="record-dialog-heading">
+            <h2>{editingId ? "Edit referee" : "Add referee"}</h2>
+            <button
+              className="dialog-close-button"
+              aria-label="Close"
+              onClick={clearForm}
+            >
+              ×
+            </button>
+          </div>
+          <form
+            className="record-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              saveReferee();
+            }}
+          >
+            <input
+              placeholder="Referee Name"
+              aria-label="Referee name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <input
+              placeholder="Mobile Number"
+              aria-label="Mobile number"
+              value={mobileNumber}
+              onChange={(e) => setMobileNumber(e.target.value)}
+            />
+            <textarea
+              rows={4}
+              placeholder="Notes"
+              aria-label="Notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+            <div className="record-form-actions">
+              <button type="button" className="subtle-button" onClick={clearForm}>
+                Cancel
+              </button>
+              <button type="submit" className="primary-button">
+                {editingId ? "Save changes" : "Add referee"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </RecordDialog>
 
       {referees.length === 0 && (
         <div className="empty-state">

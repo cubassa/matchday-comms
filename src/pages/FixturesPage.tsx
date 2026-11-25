@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import type { Fixture } from "../types/Fixture";
 import type { Venue } from "../types/Venue";
+import RecordDialog from "../components/RecordDialog";
 
 type Props = {
   fixtures: Fixture[];
@@ -27,8 +28,10 @@ export default function FixturesPage({
     setOppositionManager,
   ] = useState("");
   const [venueId, setVenueId] = useState("");
+  const [formOpen, setFormOpen] = useState(false);
 
   const clearForm = () => {
+    setFormOpen(false);
     setEditingId(null);
     setDate("");
     setKickOffTime("");
@@ -76,6 +79,12 @@ export default function FixturesPage({
     setOppositionName(fixture.oppositionName);
     setOppositionManager(fixture.oppositionManager);
     setVenueId(fixture.venueId);
+    setFormOpen(true);
+  };
+
+  const addFixture = () => {
+    clearForm();
+    setFormOpen(true);
   };
 
   const deleteFixture = (id: string) => {
@@ -97,100 +106,121 @@ export default function FixturesPage({
       <div className="section-heading">
         <div>
           <p className="eyebrow">Match schedule</p>
-          <h2>{editingId ? "Edit fixture" : "Add a fixture"}</h2>
-        </div>
-      </div>
-
-      <div className="fixture-form">
-        <label className="fixture-field">
-          <span>Match date</span>
-          <input
-            type="date"
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
-          />
-        </label>
-
-        <label className="fixture-field">
-          <span>Kick-off time</span>
-          <input
-            type="time"
-            value={kickOffTime}
-            onChange={(event) =>
-              setKickOffTime(event.target.value)
-            }
-          />
-        </label>
-
-        <label className="fixture-field">
-          <span>Opposition</span>
-          <input
-            placeholder="e.g. Riverside FC"
-            value={oppositionName}
-            onChange={(event) =>
-              setOppositionName(event.target.value)
-            }
-          />
-        </label>
-
-        <label className="fixture-field">
-          <span>Opposition manager</span>
-          <input
-            placeholder="Manager name"
-            value={oppositionManager}
-            onChange={(event) =>
-              setOppositionManager(event.target.value)
-            }
-          />
-        </label>
-
-        <label className="fixture-field fixture-field-wide">
-          <span>Venue</span>
-          <select
-            value={venueId}
-            onChange={(event) =>
-              setVenueId(event.target.value)
-            }
-          >
-            <option value="">Select a venue</option>
-            {venues.map((venue) => (
-              <option key={venue.id} value={venue.id}>
-                {venue.name}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {venues.length === 0 && (
-          <p className="form-hint fixture-field-wide">
-            Add a venue before creating a fixture.
-          </p>
-        )}
-
-        <div className="fixture-form-actions fixture-field-wide">
-          <button className="primary-button" onClick={saveFixture}>
-            {editingId ? "Save changes" : "Add fixture"}
-          </button>
-          {editingId && (
-            <button
-              className="subtle-button"
-              onClick={clearForm}
-            >
-              Cancel
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="section-heading fixture-list-heading">
-        <div>
-          <p className="eyebrow">Your schedule</p>
           <h2>Fixtures</h2>
         </div>
-        <span className="item-count">
-          {fixtures.length} {fixtures.length === 1 ? "match" : "matches"}
-        </span>
+        <div className="list-heading-actions">
+          <span className="item-count">
+            {fixtures.length} {fixtures.length === 1 ? "match" : "matches"}
+          </span>
+          <button className="primary-button" onClick={addFixture}>
+            Add fixture
+          </button>
+        </div>
       </div>
+
+      <RecordDialog
+        open={formOpen}
+        title={editingId ? "Edit fixture" : "Add fixture"}
+        onClose={clearForm}
+      >
+        <div className="record-dialog-content">
+          <div className="record-dialog-heading">
+            <h2>{editingId ? "Edit fixture" : "Add fixture"}</h2>
+            <button
+              className="dialog-close-button"
+              aria-label="Close"
+              onClick={clearForm}
+            >
+              ×
+            </button>
+          </div>
+          <form
+            className="fixture-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              saveFixture();
+            }}
+          >
+            <label className="fixture-field">
+              <span>Match date</span>
+              <input
+                type="date"
+                value={date}
+                onChange={(event) => setDate(event.target.value)}
+                required
+              />
+            </label>
+
+            <label className="fixture-field">
+              <span>Kick-off time</span>
+              <input
+                type="time"
+                value={kickOffTime}
+                onChange={(event) =>
+                  setKickOffTime(event.target.value)
+                }
+                required
+              />
+            </label>
+
+            <label className="fixture-field">
+              <span>Opposition</span>
+              <input
+                placeholder="e.g. Riverside FC"
+                value={oppositionName}
+                onChange={(event) =>
+                  setOppositionName(event.target.value)
+                }
+                required
+              />
+            </label>
+
+            <label className="fixture-field">
+              <span>Opposition manager</span>
+              <input
+                placeholder="Manager name"
+                value={oppositionManager}
+                onChange={(event) =>
+                  setOppositionManager(event.target.value)
+                }
+              />
+            </label>
+
+            <label className="fixture-field fixture-field-wide">
+              <span>Venue</span>
+              <select
+                value={venueId}
+                onChange={(event) =>
+                  setVenueId(event.target.value)
+                }
+                required
+              >
+                <option value="">Select a venue</option>
+                {venues.map((venue) => (
+                  <option key={venue.id} value={venue.id}>
+                    {venue.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {venues.length === 0 && (
+              <p className="form-hint fixture-field-wide">
+                Add a venue before creating a fixture.
+              </p>
+            )}
+
+            <div className="fixture-form-actions fixture-field-wide">
+              <button type="button" className="subtle-button" onClick={clearForm}>
+                Cancel
+              </button>
+              <button type="submit" className="primary-button">
+                {editingId ? "Save changes" : "Add fixture"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </RecordDialog>
 
       {fixtures.length === 0 && (
         <div className="empty-state">

@@ -1,7 +1,11 @@
-import { useState } from "react";
+import {
+  useState,
+  type ChangeEvent,
+} from "react";
 
 import type { Venue } from "../types/Venue";
 import type { Hospital } from "../types/Hospital";
+import RecordDialog from "../components/RecordDialog";
 
 type Props = {
   venues: Venue[];
@@ -29,8 +33,13 @@ export default function VenuesPage({
   ] = useState("");
   const [venueNotes, setVenueNotes] =
     useState("");
+  const [mapImage, setMapImage] = useState("");
+  const [mapUploadError, setMapUploadError] =
+    useState("");
+  const [formOpen, setFormOpen] = useState(false);
 
   const clearForm = () => {
+    setFormOpen(false);
     setEditingId(null);
 
     setName("");
@@ -38,6 +47,47 @@ export default function VenuesPage({
     setDefibrillatorLocation("");
     setNearestHospitalId("");
     setVenueNotes("");
+    setMapImage("");
+    setMapUploadError("");
+  };
+
+  const handleMapUpload = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setMapUploadError("Choose an image file for the venue map.");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setMapUploadError("Venue map images must be 2 MB or smaller.");
+      return;
+    }
+
+    setMapUploadError("");
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (typeof reader.result !== "string") {
+        setMapUploadError("Unable to read the selected map image.");
+        return;
+      }
+
+      setMapImage(reader.result);
+    };
+
+    reader.onerror = () => {
+      setMapUploadError("Unable to read the selected map image.");
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const saveVenue = () => {
@@ -52,6 +102,7 @@ export default function VenuesPage({
       defibrillatorLocation,
       nearestHospitalId,
       venueNotes,
+      mapImage,
     };
 
     if (editingId) {
@@ -79,6 +130,14 @@ export default function VenuesPage({
       venue.nearestHospitalId
     );
     setVenueNotes(venue.venueNotes);
+    setMapImage(venue.mapImage ?? "");
+    setMapUploadError("");
+    setFormOpen(true);
+  };
+
+  const addVenue = () => {
+    clearForm();
+    setFormOpen(true);
   };
 
   const deleteVenue = (id: string) => {
@@ -103,104 +162,130 @@ export default function VenuesPage({
 
   return (
     <>
-      <h2>
-        {editingId
-          ? "Edit Venue"
-          : "Add Venue"}
-      </h2>
-
-      <div
-        style={{
-          display: "grid",
-          gap: "0.75rem",
-          marginBottom: "2rem",
-        }}
-      >
-        <input
-          placeholder="Venue Name"
-          value={name}
-          onChange={(e) =>
-            setName(e.target.value)
-          }
-        />
-
-        <input
-          placeholder="Address"
-          value={address}
-          onChange={(e) =>
-            setAddress(e.target.value)
-          }
-        />
-
-        <input
-          placeholder="Defibrillator Location"
-          value={defibrillatorLocation}
-          onChange={(e) =>
-            setDefibrillatorLocation(
-              e.target.value
-            )
-          }
-        />
-
-        <select
-          value={nearestHospitalId}
-          onChange={(e) =>
-            setNearestHospitalId(
-              e.target.value
-            )
-          }
-        >
-          <option value="">
-            Select nearest hospital
-          </option>
-
-          {hospitals.map((hospital) => (
-            <option
-              key={hospital.id}
-              value={hospital.id}
-            >
-              {hospital.name}
-            </option>
-          ))}
-        </select>
-
-        <textarea
-          rows={8}
-          placeholder="Venue information, parking instructions, footwear restrictions, access instructions, toilets, etc."
-          value={venueNotes}
-          onChange={(e) =>
-            setVenueNotes(
-              e.target.value
-            )
-          }
-        />
-
-        <button
-          onClick={saveVenue}
-        >
-          {editingId
-            ? "Update Venue"
-            : "Add Venue"}
-        </button>
-
-        {editingId && (
-          <button
-            onClick={clearForm}
-          >
-            Cancel Edit
-          </button>
-        )}
-      </div>
-
       <div className="section-heading saved-list-heading">
         <div>
           <p className="eyebrow">Saved locations</p>
           <h2>Venues</h2>
         </div>
-        <span className="item-count">
-          {venues.length} {venues.length === 1 ? "venue" : "venues"}
-        </span>
+        <div className="list-heading-actions">
+          <span className="item-count">
+            {venues.length} {venues.length === 1 ? "venue" : "venues"}
+          </span>
+          <button className="primary-button" onClick={addVenue}>
+            Add venue
+          </button>
+        </div>
       </div>
+
+      <RecordDialog
+        open={formOpen}
+        title={editingId ? "Edit venue" : "Add venue"}
+        onClose={clearForm}
+      >
+        <div className="record-dialog-content">
+          <div className="record-dialog-heading">
+            <h2>{editingId ? "Edit venue" : "Add venue"}</h2>
+            <button
+              className="dialog-close-button"
+              aria-label="Close"
+              onClick={clearForm}
+            >
+              ×
+            </button>
+          </div>
+          <form
+            className="record-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              saveVenue();
+            }}
+          >
+            <input
+              placeholder="Venue Name"
+              aria-label="Venue name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+
+            <input
+              placeholder="Address"
+              aria-label="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+
+            <input
+              placeholder="Defibrillator Location"
+              aria-label="Defibrillator location"
+              value={defibrillatorLocation}
+              onChange={(e) => setDefibrillatorLocation(e.target.value)}
+            />
+
+            <select
+              aria-label="Nearest hospital"
+              value={nearestHospitalId}
+              onChange={(e) => setNearestHospitalId(e.target.value)}
+            >
+              <option value="">Select nearest hospital</option>
+              {hospitals.map((hospital) => (
+                <option key={hospital.id} value={hospital.id}>
+                  {hospital.name}
+                </option>
+              ))}
+            </select>
+
+            <textarea
+              rows={5}
+              placeholder="Venue information, parking instructions, footwear restrictions, access instructions, toilets, etc."
+              aria-label="Venue information"
+              value={venueNotes}
+              onChange={(e) => setVenueNotes(e.target.value)}
+            />
+
+            <label className="fixture-field">
+              <span>Venue map image</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleMapUpload}
+              />
+            </label>
+
+            <p className="form-hint">
+              Upload an image up to 2 MB. It will be saved with this venue.
+            </p>
+
+            {mapUploadError && (
+              <p className="form-error" role="alert">
+                {mapUploadError}
+              </p>
+            )}
+
+            {mapImage && (
+              <div className="venue-map-preview">
+                <img src={mapImage} alt="Venue map preview" />
+                <button
+                  type="button"
+                  className="subtle-button"
+                  onClick={() => setMapImage("")}
+                >
+                  Remove map image
+                </button>
+              </div>
+            )}
+
+            <div className="record-form-actions">
+              <button type="button" className="subtle-button" onClick={clearForm}>
+                Cancel
+              </button>
+              <button type="submit" className="primary-button">
+                {editingId ? "Save changes" : "Add venue"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </RecordDialog>
 
       {venues.length === 0 && (
         <div className="empty-state">
@@ -248,6 +333,13 @@ export default function VenuesPage({
                 <div className="record-notes">
                   <span>Venue information</span>
                   <p>{venue.venueNotes}</p>
+                </div>
+              )}
+
+              {venue.mapImage && (
+                <div className="venue-map">
+                  <span>Venue map</span>
+                  <img src={venue.mapImage} alt={`Map for ${venue.name}`} />
                 </div>
               )}
 
