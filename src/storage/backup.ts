@@ -3,6 +3,7 @@ import type { Venue } from "../types/Venue";
 import type { Referee } from "../types/Referee";
 import type { ClubProfile } from "../types/ClubProfile";
 import type { Fixture } from "../types/Fixture";
+import type { MessageTemplates } from "../types/MessageTemplates";
 
 export type BackupData = {
   hospitals: Hospital[];
@@ -10,6 +11,7 @@ export type BackupData = {
   referees: Referee[];
   clubProfile: ClubProfile;
   fixtures: Fixture[];
+  messageTemplates?: MessageTemplates;
 };
 
 export function downloadBackup(

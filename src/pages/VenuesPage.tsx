@@ -304,44 +304,59 @@ export default function VenuesPage({
           );
 
           return (
-            <article className="record-card" key={venue.id}>
-              <div className="record-card-heading">
-                <div>
-                  <p className="eyebrow">Match venue</p>
-                  <h3>{venue.name}</h3>
+            <article className="record-card venue-card" key={venue.id}>
+              <div className="venue-card-body">
+                <div className="venue-card-main">
+                  <div className="record-card-heading">
+                    <div>
+                      <p className="eyebrow">Match venue</p>
+                      <h3>{venue.name}</h3>
+                    </div>
+                  </div>
+
+                  <div className="record-details">
+                    <p>
+                      <span>Address</span>
+                      <strong>{venue.address || "Not entered"}</strong>
+                    </p>
+                    <p>
+                      <span>Defibrillator</span>
+                      <strong>
+                        {venue.defibrillatorLocation || "Not entered"}
+                      </strong>
+                    </p>
+                    <p>
+                      <span>Nearest hospital</span>
+                      <strong>{hospital?.name ?? "Not selected"}</strong>
+                    </p>
+                  </div>
+
+                </div>
+
+                <div
+                  className={
+                    venue.mapImage
+                      ? "venue-resources has-map"
+                      : "venue-resources"
+                  }
+                >
+                  <section className="venue-resource">
+                    <span>Venue information</span>
+                    <p>
+                      {venue.venueNotes || "No venue information added."}
+                    </p>
+                  </section>
+                  {venue.mapImage && (
+                    <section className="venue-resource">
+                      <span>Venue map</span>
+                      <img
+                        src={venue.mapImage}
+                        alt={`Map for ${venue.name}`}
+                      />
+                    </section>
+                  )}
                 </div>
               </div>
-
-              <div className="record-details">
-                <p>
-                  <span>Address</span>
-                  <strong>{venue.address || "Not entered"}</strong>
-                </p>
-                <p>
-                  <span>Defibrillator</span>
-                  <strong>
-                    {venue.defibrillatorLocation || "Not entered"}
-                  </strong>
-                </p>
-                <p>
-                  <span>Nearest hospital</span>
-                  <strong>{hospital?.name ?? "Not selected"}</strong>
-                </p>
-              </div>
-
-              {venue.venueNotes && (
-                <div className="record-notes">
-                  <span>Venue information</span>
-                  <p>{venue.venueNotes}</p>
-                </div>
-              )}
-
-              {venue.mapImage && (
-                <div className="venue-map">
-                  <span>Venue map</span>
-                  <img src={venue.mapImage} alt={`Map for ${venue.name}`} />
-                </div>
-              )}
 
               <div className="record-card-actions">
                 <button

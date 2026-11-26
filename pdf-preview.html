@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Match PDF preview</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Segoe UI, sans-serif;
+        color: #1d3129;
+        background: #e9efeb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 14px 20px;
+        background: #173a2c;
+        color: #fff;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      header p {
+        margin: 4px 0 0;
+        color: #d6e5dc;
+        font-size: 12px;
+      }
+
+      .preview-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      select,
+      button,
+      .open-pdf {
+        min-height: 36px;
+        border: 1px solid #c8d6cc;
+        border-radius: 6px;
+        padding: 7px 10px;
+        background: #fff;
+        color: #173a2c;
+        font: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      button:hover,
+      .open-pdf:hover {
+        background: #edf5ef;
+      }
+
+      #status {
+        min-width: 90px;
+        color: #d6e5dc;
+        font-size: 12px;
+      }
+
+      #preview {
+        flex: 1;
+        width: 100%;
+        border: 0;
+        background: #d7dfd9;
+      }
+
+      #preview iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #d7dfd9;
+      }
+
+      @media (max-width: 720px) {
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .preview-controls {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>Match PDF preview</h1>
+        <p>Changes to the PDF generator refresh this preview automatically.</p>
+      </div>
+      <div class="preview-controls">
+        <label for="scenario">Scenario</label>
+        <select id="scenario">
+          <option value="standard">Standard fixture with map</option>
+          <option value="long-venue">Long venue details with map</option>
+          <option value="long-no-map">
+            Long venue details without map (one-page check)
+          </option>
+        </select>
+        <button id="refresh" type="button">Refresh preview</button>
+        <a id="open-pdf" class="open-pdf" target="_blank" rel="noreferrer">
+          Open PDF
+        </a>
+        <output id="status" aria-live="polite"></output>
+      </div>
+    </header>
+    <div id="preview"></div>
+    <script type="module" src="/src/dev/pdfPreview.ts"></script>
+  </body>
+</html>

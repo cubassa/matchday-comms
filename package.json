@@ -1,15 +1,17 @@
 {
-  "name": "hrbyfc-fixtures",
+  "name": "matchday-comms",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:pdf": "vite --open /pdf-preview.html",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "jspdf": "^4.2.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

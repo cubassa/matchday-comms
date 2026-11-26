@@ -408,6 +408,103 @@ textarea:focus-visible,
   padding-top: 5px;
 }
 
+.message-template-settings {
+  display: grid;
+  gap: 14px;
+  margin-top: 34px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.message-template-settings .section-heading {
+  margin-bottom: 0;
+}
+
+.template-description {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.template-field {
+  display: grid;
+  gap: 7px;
+  color: #46564c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.template-placeholder-guide {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbfcfb;
+}
+
+.template-placeholder-guide summary {
+  color: var(--green-800);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.template-placeholder-guide p {
+  margin: 10px 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.template-placeholder-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.template-placeholder-list code {
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: var(--green-100);
+  color: var(--green-800);
+  font-size: 11px;
+}
+
+.generated-messages {
+  display: grid;
+  gap: 18px;
+}
+
+.generated-message {
+  display: grid;
+  gap: 8px;
+}
+
+.generated-message-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.generated-message-heading h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.generated-message textarea {
+  min-height: 120px;
+  resize: vertical;
+  white-space: pre-wrap;
+}
+
+.communication-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 18px;
+}
+
 .form-hint {
   margin: -5px 0 0;
   color: var(--muted);
@@ -420,24 +517,35 @@ textarea:focus-visible,
   font-size: 12px;
 }
 
-.venue-map-preview,
-.venue-map {
+.venue-map-preview {
   display: grid;
-  justify-items: start;
-  gap: 9px;
+  align-content: start;
+  gap: 7px;
 }
 
-.venue-map-preview img,
-.venue-map img {
+.venue-map-preview img {
   display: block;
   max-width: 100%;
-  max-height: 360px;
+  max-height: 240px;
   border: 1px solid var(--line);
   border-radius: 9px;
   object-fit: contain;
+  background: #f5f7f5;
 }
 
-.venue-map > span {
+.venue-resource img {
+  display: block;
+  width: 100%;
+  height: 136px;
+  max-width: 260px;
+  justify-self: start;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  object-fit: contain;
+  background: #f5f7f5;
+}
+
+.venue-map-preview > span {
   color: #89968e;
   font-size: 10px;
   font-weight: 750;
@@ -467,6 +575,58 @@ textarea:focus-visible,
     border-color 150ms ease,
     box-shadow 150ms ease,
     transform 150ms ease;
+}
+
+.venue-card-body {
+  display: grid;
+  gap: 16px;
+}
+
+.venue-card-main {
+  min-width: 0;
+}
+
+.venue-resources {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+.venue-resources.has-map {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.venue-resource {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #fbfcfb;
+}
+
+.venue-resource > span {
+  color: #89968e;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.venue-resource p {
+  margin: 0;
+  color: #526158;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.venue-resource .venue-resource-empty {
+  color: #89968e;
+  font-style: italic;
 }
 
 .record-card:hover {
@@ -604,7 +764,7 @@ textarea:focus-visible,
 
 .fixture-details {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   padding: 15px 0;
   border-top: 1px solid #edf1ed;
@@ -766,6 +926,14 @@ textarea:focus-visible,
 
   .record-card {
     padding: 17px 15px 12px;
+  }
+
+  .venue-resources {
+    grid-template-columns: 1fr;
+  }
+
+  .venue-resource img {
+    height: 120px;
   }
 
   .page-content .section-heading {

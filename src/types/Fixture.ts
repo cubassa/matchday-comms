@@ -8,4 +8,6 @@ export type Fixture = {
   oppositionManager: string;
 
   venueId: string;
+
+  refereeId?: string;
 };

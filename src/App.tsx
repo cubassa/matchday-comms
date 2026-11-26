@@ -14,6 +14,8 @@ import type { Venue } from "./types/Venue";
 import type { Referee } from "./types/Referee";
 import type { ClubProfile } from "./types/ClubProfile";
 import type { Fixture } from "./types/Fixture";
+import type { MessageTemplates } from "./types/MessageTemplates";
+import { DEFAULT_MESSAGE_TEMPLATES } from "./utils/messageTemplates";
 
 import {
   loadData,
@@ -39,6 +41,9 @@ const CLUB_PROFILE_STORAGE_KEY =
 
 const FIXTURE_STORAGE_KEY =
   "matchday-comms-fixtures";
+
+const MESSAGE_TEMPLATES_STORAGE_KEY =
+  "matchday-comms-message-templates";
 
 const DEFAULT_PROFILE: ClubProfile = {
   clubName: "",
@@ -106,6 +111,14 @@ function App() {
       )
     );
 
+  const [messageTemplates, setMessageTemplates] =
+    useState<MessageTemplates>(() =>
+      loadData(
+        MESSAGE_TEMPLATES_STORAGE_KEY,
+        DEFAULT_MESSAGE_TEMPLATES
+      )
+    );
+
   const updateVenues = (
     data: Venue[]
   ) => {
@@ -161,6 +174,17 @@ function App() {
     );
   };
 
+  const updateMessageTemplates = (
+    templates: MessageTemplates
+  ) => {
+    setMessageTemplates(templates);
+
+    saveData(
+      MESSAGE_TEMPLATES_STORAGE_KEY,
+      templates
+    );
+  };
+
   const exportData = () => {
     downloadBackup({
       venues,
@@ -168,6 +192,7 @@ function App() {
       referees,
       clubProfile,
       fixtures,
+      messageTemplates,
     });
   };
 
@@ -202,6 +227,10 @@ function App() {
           DEFAULT_PROFILE
       );
 
+      updateMessageTemplates(
+        data.messageTemplates ?? DEFAULT_MESSAGE_TEMPLATES
+      );
+
       updateFixtures(
         data.fixtures ?? []
       );
@@ -231,7 +260,7 @@ function App() {
           </div>
         </div>
         <p className="app-intro">
-          Your match information, ready for the big day.
+          Generate consistent matchday communications for your team.
         </p>
       </header>
 
@@ -270,7 +299,7 @@ function App() {
             aria-current={page === "profile" ? "page" : undefined}
             onClick={() => setPage("profile")}
           >
-            Club Profile
+            Profile & Templates
           </button>
         </nav>
 
@@ -317,6 +346,8 @@ function App() {
             <ClubProfilePage
               profile={clubProfile}
               setProfile={updateClubProfile}
+              templates={messageTemplates}
+              setTemplates={updateMessageTemplates}
             />
           )}
 
@@ -324,15 +355,16 @@ function App() {
             <FixturesPage
               fixtures={fixtures}
               venues={venues}
+              referees={referees}
+              hospitals={hospitals}
+              profile={clubProfile}
+              templates={messageTemplates}
               setFixtures={updateFixtures}
             />
           )}
         </div>
       </main>
 
-      <footer className="app-footer">
-        Keep your matchday details up to date.
-      </footer>
     </div>
   );
 }

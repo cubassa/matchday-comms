@@ -1,13 +1,19 @@
 import type { ClubProfile } from "../types/ClubProfile";
+import type { MessageTemplates } from "../types/MessageTemplates";
+import { MESSAGE_PLACEHOLDERS } from "../utils/messageTemplates";
 
 type Props = {
   profile: ClubProfile;
   setProfile: (profile: ClubProfile) => void;
+  templates: MessageTemplates;
+  setTemplates: (templates: MessageTemplates) => void;
 };
 
 export default function ClubProfilePage({
   profile,
   setProfile,
+  templates,
+  setTemplates,
 }: Props) {
   const updateField = (
     key: keyof ClubProfile,
@@ -15,6 +21,16 @@ export default function ClubProfilePage({
   ) => {
     setProfile({
       ...profile,
+      [key]: value,
+    });
+  };
+
+  const updateTemplate = (
+    key: keyof MessageTemplates,
+    value: string
+  ) => {
+    setTemplates({
+      ...templates,
       [key]: value,
     });
   };
@@ -183,6 +199,54 @@ export default function ClubProfilePage({
 
 
       </div>
+
+      <section className="message-template-settings">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Matchday communications</p>
+            <h2>Message templates</h2>
+          </div>
+        </div>
+        <p className="template-description">
+          Customize the email for opposition managers and the WhatsApp
+          message for referees. Templates are saved automatically.
+        </p>
+
+        <label className="template-field">
+          <span>Opposition manager email</span>
+          <textarea
+            rows={10}
+            value={templates.oppositionEmail}
+            onChange={(event) =>
+              updateTemplate("oppositionEmail", event.target.value)
+            }
+          />
+        </label>
+
+        <label className="template-field">
+          <span>Referee WhatsApp message</span>
+          <textarea
+            rows={8}
+            value={templates.refereeWhatsApp}
+            onChange={(event) =>
+              updateTemplate("refereeWhatsApp", event.target.value)
+            }
+          />
+        </label>
+
+        <details className="template-placeholder-guide">
+          <summary>Available placeholders</summary>
+          <p>
+            Use a placeholder with double curly braces. Empty optional
+            details are left blank; an unassigned referee appears as TBC.
+          </p>
+          <div className="template-placeholder-list">
+            {MESSAGE_PLACEHOLDERS.map((placeholder) => (
+              <code key={placeholder}>{`{{${placeholder}}}`}</code>
+            ))}
+          </div>
+        </details>
+      </section>
     </>
   );
 }

@@ -2,17 +2,30 @@ import { useState } from "react";
 
 import type { Fixture } from "../types/Fixture";
 import type { Venue } from "../types/Venue";
+import type { Referee } from "../types/Referee";
+import type { Hospital } from "../types/Hospital";
+import type { ClubProfile } from "../types/ClubProfile";
+import type { MessageTemplates } from "../types/MessageTemplates";
 import RecordDialog from "../components/RecordDialog";
+import FixtureCommunicationDialog from "../components/FixtureCommunicationDialog";
 
 type Props = {
   fixtures: Fixture[];
   venues: Venue[];
+  referees: Referee[];
+  hospitals: Hospital[];
+  profile: ClubProfile;
+  templates: MessageTemplates;
   setFixtures: (fixtures: Fixture[]) => void;
 };
 
 export default function FixturesPage({
   fixtures,
   venues,
+  referees,
+  hospitals,
+  profile,
+  templates,
   setFixtures,
 }: Props) {
   const [editingId, setEditingId] =
@@ -28,7 +41,14 @@ export default function FixturesPage({
     setOppositionManager,
   ] = useState("");
   const [venueId, setVenueId] = useState("");
+  const [refereeId, setRefereeId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
+  const [communicationFixture, setCommunicationFixture] =
+    useState<Fixture | null>(null);
+
+  const sortedFixtures = [...fixtures].sort((first, second) =>
+    second.date.localeCompare(first.date)
+  );
 
   const clearForm = () => {
     setFormOpen(false);
@@ -38,6 +58,7 @@ export default function FixturesPage({
     setOppositionName("");
     setOppositionManager("");
     setVenueId("");
+    setRefereeId("");
   };
 
   const saveFixture = () => {
@@ -57,6 +78,7 @@ export default function FixturesPage({
       oppositionName,
       oppositionManager,
       venueId,
+      refereeId,
     };
 
     if (editingId) {
@@ -79,6 +101,7 @@ export default function FixturesPage({
     setOppositionName(fixture.oppositionName);
     setOppositionManager(fixture.oppositionManager);
     setVenueId(fixture.venueId);
+    setRefereeId(fixture.refereeId ?? "");
     setFormOpen(true);
   };
 
@@ -204,6 +227,23 @@ export default function FixturesPage({
               </select>
             </label>
 
+            <label className="fixture-field fixture-field-wide">
+              <span>Referee</span>
+              <select
+                value={refereeId}
+                onChange={(event) =>
+                  setRefereeId(event.target.value)
+                }
+              >
+                <option value="">TBC</option>
+                {referees.map((referee) => (
+                  <option key={referee.id} value={referee.id}>
+                    {referee.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             {venues.length === 0 && (
               <p className="form-hint fixture-field-wide">
                 Add a venue before creating a fixture.
@@ -232,16 +272,19 @@ export default function FixturesPage({
         </div>
       )}
 
-      {fixtures.map((fixture) => {
+      {sortedFixtures.map((fixture) => {
         const venue = venues.find(
           (item) => item.id === fixture.venueId
+        );
+        const referee = referees.find(
+          (item) => item.id === fixture.refereeId
         );
 
         return (
           <article className="fixture-card" key={fixture.id}>
             <div className="fixture-card-heading">
               <div>
-                <p className="eyebrow">Away match</p>
+                <p className="eyebrow">Home match</p>
                 <h3>{fixture.oppositionName}</h3>
               </div>
               <span className="kickoff-badge">
@@ -264,9 +307,19 @@ export default function FixturesPage({
                   {fixture.oppositionManager || "Not entered"}
                 </strong>
               </p>
+              <p>
+                <span>Referee</span>
+                <strong>{referee?.name ?? "TBC"}</strong>
+              </p>
             </div>
 
             <div className="fixture-card-actions">
+              <button
+                className="subtle-button"
+                onClick={() => setCommunicationFixture(fixture)}
+              >
+                Prepare messages
+              </button>
               <button
                 className="subtle-button"
                 onClick={() => editFixture(fixture)}
@@ -283,6 +336,15 @@ export default function FixturesPage({
           </article>
         );
       })}
+      <FixtureCommunicationDialog
+        fixture={communicationFixture}
+        venues={venues}
+        referees={referees}
+        hospitals={hospitals}
+        profile={profile}
+        templates={templates}
+        onClose={() => setCommunicationFixture(null)}
+      />
     </>
   );
 }
