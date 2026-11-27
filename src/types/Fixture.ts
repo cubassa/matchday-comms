@@ -6,6 +6,7 @@ export type Fixture = {
 
   oppositionName: string;
   oppositionManager: string;
+  oppositionManagerEmail: string;
 
   venueId: string;
 

@@ -40,6 +40,8 @@ export default function FixturesPage({
     oppositionManager,
     setOppositionManager,
   ] = useState("");
+  const [oppositionManagerEmail, setOppositionManagerEmail] =
+    useState("");
   const [venueId, setVenueId] = useState("");
   const [refereeId, setRefereeId] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -57,6 +59,7 @@ export default function FixturesPage({
     setKickOffTime("");
     setOppositionName("");
     setOppositionManager("");
+    setOppositionManagerEmail("");
     setVenueId("");
     setRefereeId("");
   };
@@ -77,6 +80,7 @@ export default function FixturesPage({
       kickOffTime,
       oppositionName,
       oppositionManager,
+      oppositionManagerEmail,
       venueId,
       refereeId,
     };
@@ -100,6 +104,7 @@ export default function FixturesPage({
     setKickOffTime(fixture.kickOffTime);
     setOppositionName(fixture.oppositionName);
     setOppositionManager(fixture.oppositionManager);
+    setOppositionManagerEmail(fixture.oppositionManagerEmail ?? "");
     setVenueId(fixture.venueId);
     setRefereeId(fixture.refereeId ?? "");
     setFormOpen(true);
@@ -209,6 +214,18 @@ export default function FixturesPage({
               />
             </label>
 
+            <label className="fixture-field">
+              <span>Opposition manager email</span>
+              <input
+                type="email"
+                placeholder="manager@example.com"
+                value={oppositionManagerEmail}
+                onChange={(event) =>
+                  setOppositionManagerEmail(event.target.value)
+                }
+              />
+            </label>
+
             <label className="fixture-field fixture-field-wide">
               <span>Venue</span>
               <select
@@ -305,6 +322,12 @@ export default function FixturesPage({
                 <span>Opposition manager</span>
                 <strong>
                   {fixture.oppositionManager || "Not entered"}
+                </strong>
+              </p>
+              <p>
+                <span>Manager email</span>
+                <strong>
+                  {fixture.oppositionManagerEmail || "Not entered"}
                 </strong>
               </p>
               <p>

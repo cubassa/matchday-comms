@@ -72,9 +72,9 @@ function createPreviewBadge(): string {
     throw new Error("Unable to create the preview badge.");
   }
 
-  context.fillStyle = "#173a2c";
+  context.fillStyle = "#051735";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#f4f8f5";
+  context.fillStyle = "#f4f7fb";
   context.beginPath();
   context.moveTo(64, 12);
   context.lineTo(109, 28);
@@ -85,12 +85,12 @@ function createPreviewBadge(): string {
   context.closePath();
   context.fill();
 
-  context.fillStyle = "#2e7453";
+  context.fillStyle = "#174b84";
   context.font = "bold 54px Georgia, serif";
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.fillText("R", 64, 60);
-  context.fillStyle = "#173a2c";
+  context.fillStyle = "#051735";
   context.font = "bold 12px Segoe UI, sans-serif";
   context.fillText("RFC", 64, 95);
 
@@ -104,6 +104,7 @@ const previewData: MatchPdfData = {
     kickOffTime: "10:30",
     oppositionName: "Richmond & Kew FC U15 Blues",
     oppositionManager: "Jordan Lee",
+    oppositionManagerEmail: "jordan@example.test",
     venueId: "preview-venue",
     refereeId: "preview-referee",
   },

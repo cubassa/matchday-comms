@@ -32,20 +32,22 @@ export function createMatchPdf({
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const contentWidth = pageWidth - margin * 2;
+  const bodyFontSize = 9;
+  const labelFontSize = 7;
   const lineHeight = 4.3;
   const colors = {
-    green: [23, 58, 44] as const,
-    accent: [46, 116, 83] as const,
-    pale: [244, 248, 245] as const,
-    border: [220, 230, 222] as const,
-    text: [29, 49, 41] as const,
-    muted: [105, 121, 111] as const,
+    navy: [5, 23, 53] as const,
+    accent: [23, 75, 132] as const,
+    pale: [244, 247, 251] as const,
+    border: [220, 230, 240] as const,
+    text: [29, 42, 61] as const,
+    muted: [105, 121, 138] as const,
   };
 
   const wrappedLines = (
     value: string,
     width: number,
-    fontSize = 9,
+    fontSize = bodyFontSize,
     fontStyle: "normal" | "bold" = "normal"
   ) => {
     pdf.setFont("helvetica", fontStyle);
@@ -89,7 +91,11 @@ export function createMatchPdf({
 
   const clubName = profile.clubName || profile.teamName || "Club name";
   const clubDescriptionLines = profile.clubDescription.trim()
-    ? wrappedLines(profile.clubDescription, pageWidth - margin * 2 - 38, 9)
+    ? wrappedLines(
+        profile.clubDescription,
+        pageWidth - margin * 2 - 38,
+        bodyFontSize
+      )
     : [];
   const badgeFormat = profile.badgeImage
     ? imageFormat(profile.badgeImage)
@@ -97,6 +103,7 @@ export function createMatchPdf({
   const hasBadge = Boolean(profile.badgeImage && badgeFormat);
   const headerTextX = margin + (hasBadge ? 36 : 0);
   const headerTextWidth = pageWidth - margin - headerTextX;
+  const headerTitleY = hasBadge ? 11 : 18;
   const clubNameLines = wrappedLines(clubName, headerTextWidth, 15, "bold");
   const headerHeight = Math.max(
     42,
@@ -108,9 +115,20 @@ export function createMatchPdf({
       5
   );
 
-  const hospitalNameWidth = 48;
+  const hospitalFontSize = bodyFontSize;
+  const hospitalLineHeight = 3.8;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(hospitalFontSize);
+  const widestHospitalName = hospitals.reduce(
+    (width, hospital) =>
+      Math.max(
+        width,
+        pdf.getTextWidth(hospital.name || "Unnamed hospital")
+      ),
+    0
+  );
+  const hospitalNameWidth = Math.max(48, widestHospitalName + 8);
   const hospitalDetailWidth = contentWidth - hospitalNameWidth - 14;
-  const hospitalFontSize = 6.3;
   const hospitalEntries = hospitals.length
     ? hospitals.map((hospital) => {
         const address = [hospital.address, hospital.postcode]
@@ -123,12 +141,7 @@ export function createMatchPdf({
         ]
           .filter(Boolean)
           .join(" | ");
-        const nameLines = wrappedLines(
-          hospital.name || "Unnamed hospital",
-          hospitalNameWidth - 8,
-          hospitalFontSize,
-          "bold"
-        );
+        const nameLines = [hospital.name || "Unnamed hospital"];
         const detailLines = wrappedLines(
           details || "No additional details",
           hospitalDetailWidth - 8,
@@ -140,7 +153,9 @@ export function createMatchPdf({
           detailLines,
           height: Math.max(
             5.5,
-            Math.max(nameLines.length, detailLines.length) * 3.2 + 1.5
+            Math.max(nameLines.length, detailLines.length) *
+              hospitalLineHeight +
+              1.5
           ),
         };
       })
@@ -161,7 +176,7 @@ export function createMatchPdf({
   let y = headerHeight + 8;
 
   const drawPageHeader = () => {
-    pdf.setFillColor(...colors.green);
+    pdf.setFillColor(...colors.navy);
     pdf.rect(0, 0, pageWidth, headerHeight, "F");
 
     if (hasBadge && profile.badgeImage && badgeFormat) {
@@ -181,12 +196,12 @@ export function createMatchPdf({
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(15);
     clubNameLines.forEach((line, index) => {
-      pdf.text(line, headerTextX, 18 + index * 5.5);
+      pdf.text(line, headerTextX, headerTitleY + index * 5.5);
     });
 
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9);
-    const descriptionY = 18 + clubNameLines.length * 5.5 + 2;
+    pdf.setFontSize(bodyFontSize);
+    const descriptionY = headerTitleY + clubNameLines.length * 5.5 + 2;
     clubDescriptionLines.forEach((line, index) => {
       pdf.text(line, headerTextX, descriptionY + index * 4);
     });
@@ -208,7 +223,7 @@ export function createMatchPdf({
   const addSectionHeading = (title: string) => {
     ensureSpace(13);
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
+    pdf.setFontSize(bodyFontSize);
     pdf.setTextColor(...colors.accent);
     pdf.text(title, margin, y);
     y += 3;
@@ -234,7 +249,8 @@ export function createMatchPdf({
         ...row.map(
           (field) =>
             12 +
-            wrappedLines(field.value, width - 8, 9).length * lineHeight
+            wrappedLines(field.value, width - 8, bodyFontSize).length *
+              lineHeight
         )
       );
     });
@@ -261,16 +277,18 @@ export function createMatchPdf({
         }
 
         pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(7);
+        pdf.setFontSize(labelFontSize);
         pdf.setTextColor(...colors.muted);
         pdf.text(field.label.toUpperCase(), x + 4, rowTop + 6);
 
         pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(9);
+        pdf.setFontSize(bodyFontSize);
         pdf.setTextColor(...colors.text);
-        wrappedLines(field.value, width - 8, 9).forEach((line, lineIndex) => {
-          pdf.text(line, x + 4, rowTop + 12 + lineIndex * lineHeight);
-        });
+        wrappedLines(field.value, width - 8, bodyFontSize).forEach(
+          (line, lineIndex) => {
+            pdf.text(line, x + 4, rowTop + 12 + lineIndex * lineHeight);
+          }
+        );
       });
 
       rowTop += rowHeight;
@@ -286,7 +304,9 @@ export function createMatchPdf({
     const textWidth = contentWidth - 12;
     const columnGap = 8;
     const columnWidth = (textWidth - columnGap) / 2;
-    const venueLineHeight = 3.1;
+    const venueLineHeight = 3.8;
+    const informationLineHeight = 4.2;
+    const informationParagraphSpacing = 2.5;
     const nameLines = wrappedLines(
       venue?.name || "Venue not selected",
       textWidth,
@@ -296,15 +316,17 @@ export function createMatchPdf({
     const addressLines = wrappedLines(
       venue?.address ?? "",
       columnWidth,
-      8
+      bodyFontSize
     );
     const defibrillatorLines = wrappedLines(
       venue?.defibrillatorLocation ?? "",
       columnWidth,
-      8
+      bodyFontSize
     );
     const venueInformation = [
-      venue?.venueNotes?.replace(/(?:\r?\n){2,}/g, "\n") ||
+      venue?.venueNotes
+        ?.replace(/\r\n/g, "\n")
+        .replace(/\n{2,}/g, "\n\n") ||
         "No venue information has been entered.",
       venue?.mapImage && !mapFormat
         ? "The uploaded venue map format could not be embedded in this PDF."
@@ -312,7 +334,17 @@ export function createMatchPdf({
     ]
       .filter(Boolean)
       .join("\n");
-    const informationLines = wrappedLines(venueInformation, textWidth, 8);
+    const informationLines = wrappedLines(
+      venueInformation,
+      textWidth,
+      bodyFontSize
+    );
+    const informationHeight = informationLines.reduce(
+      (height, line) =>
+        height +
+        (line ? informationLineHeight : informationParagraphSpacing),
+      0
+    );
 
     let textY = 9 + nameLines.length * 5;
     textY += 2;
@@ -320,8 +352,8 @@ export function createMatchPdf({
       Math.max(addressLines.length, defibrillatorLines.length) *
       venueLineHeight;
     textY += 4.5 + contactDetailsHeight + 1.5;
-    textY += 4.5 + informationLines.length * venueLineHeight;
-    const panelHeight = Math.max(39, textY + 7);
+    textY += 4.5 + informationHeight;
+    const panelHeight = Math.max(39, textY);
     ensureSpace(panelHeight + 15);
     addSectionHeading("Venue");
 
@@ -342,17 +374,30 @@ export function createMatchPdf({
 
     const drawLabel = (label: string, x: number) => {
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(7);
+      pdf.setFontSize(labelFontSize);
       pdf.setTextColor(...colors.muted);
       pdf.text(label, x, cursor);
     };
 
-    const drawLines = (lines: string[], x: number) => {
+    const drawLines = (
+      lines: string[],
+      x: number,
+      fontSize = bodyFontSize,
+      lineHeight = venueLineHeight,
+      paragraphSpacing = 0
+    ) => {
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(8);
+      pdf.setFontSize(fontSize);
       pdf.setTextColor(...colors.text);
-      lines.forEach((line, index) => {
-        pdf.text(line, x, cursor + 4.5 + index * venueLineHeight);
+      let textY = cursor + 4.5;
+      lines.forEach((line) => {
+        if (!line) {
+          textY += paragraphSpacing;
+          return;
+        }
+
+        pdf.text(line, x, textY);
+        textY += lineHeight;
       });
     };
 
@@ -364,7 +409,13 @@ export function createMatchPdf({
     drawLines(defibrillatorLines, defibrillatorX);
     cursor += 4.5 + contactDetailsHeight + 1.5;
     drawLabel("PARKING, ACCESS & FACILITIES", addressX);
-    drawLines(informationLines, addressX);
+    drawLines(
+      informationLines,
+      addressX,
+      bodyFontSize,
+      informationLineHeight,
+      informationParagraphSpacing
+    );
 
     y = top + panelHeight + 7;
   };
@@ -426,7 +477,7 @@ export function createMatchPdf({
     );
 
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(7);
+    pdf.setFontSize(labelFontSize);
     pdf.setTextColor(...colors.accent);
     pdf.text("NEAREST HOSPITALS", margin + 5, top + 5);
 
@@ -443,14 +494,18 @@ export function createMatchPdf({
       pdf.setTextColor(...colors.text);
       entry.nameLines.forEach((line, index) => {
         if (line) {
-          pdf.text(line, margin + 5, rowTop + 3.5 + index * 3.2);
+          pdf.text(
+            line,
+            margin + 5,
+            rowTop + 3.5 + index * hospitalLineHeight
+          );
         }
       });
 
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(hospitalFontSize);
       entry.detailLines.forEach((line, index) => {
-        pdf.text(line, detailX, rowTop + 3.5 + index * 3.2);
+        pdf.text(line, detailX, rowTop + 3.5 + index * hospitalLineHeight);
       });
       rowTop += entry.height;
     });
@@ -466,7 +521,7 @@ export function createMatchPdf({
   drawPageHeader();
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(16);
-  pdf.setTextColor(...colors.green);
+  pdf.setTextColor(...colors.navy);
   pdf.text(`${teamName} vs ${fixture.oppositionName}`, margin, y);
   y += 10;
   pdf.setTextColor(...colors.text);

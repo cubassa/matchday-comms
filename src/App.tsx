@@ -255,12 +255,13 @@ function App() {
             MC
           </div>
           <div>
-            <p className="eyebrow">Matchday operations</p>
             <h1>Matchday Comms</h1>
+            <p className="eyebrow">Matchday operations</p>
+            
           </div>
         </div>
         <p className="app-intro">
-          Generate consistent matchday communications for your team.
+          Generate consistent matchday communications.
         </p>
       </header>
 

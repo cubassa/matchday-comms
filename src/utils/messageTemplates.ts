@@ -7,7 +7,7 @@ import type { MessageTemplates } from "../types/MessageTemplates";
 
 export const DEFAULT_MESSAGE_TEMPLATES: MessageTemplates = {
   oppositionEmail:
-    "Subject: Match arrangements - {{teamName}} vs {{oppositionName}}\n\nHello,\n\nWe look forward to welcoming you on {{date}}. Kick-off is at {{kickOffTime}}.\n\nVenue: {{venueName}}\nAddress: {{venueAddress}}\n\n{{venueNotes}}\n\nPlease let us know if you have any questions.\n\n{{managerName}}\n{{clubName}}",
+    "Subject: Match arrangements - {{teamName}} vs {{oppositionName}}\n\nHello {{oppositionManager}},\n\nWe look forward to welcoming you on {{date}}. Kick-off is at {{kickOffTime}}.\n\nVenue: {{venueName}}\nAddress: {{venueAddress}}\n\n{{venueNotes}}\n\nPlease let us know if you have any questions.\n\n{{managerName}}\n{{clubName}}",
   refereeWhatsApp:
     "Hi {{refereeName}},\n\nJust confirming your appointment for {{oppositionName}} at {{venueName}} on {{date}}. Kick-off is {{kickOffTime}}.\n\nAddress: {{venueAddress}}\n\nThanks,\n{{managerName}}\n{{clubName}}",
 };
@@ -20,6 +20,7 @@ export const MESSAGE_PLACEHOLDERS = [
   "managerEmail",
   "oppositionName",
   "oppositionManager",
+  "oppositionManagerEmail",
   "date",
   "kickOffTime",
   "venueName",
@@ -44,6 +45,10 @@ type MatchTemplateData = {
   hospital: Hospital | undefined;
   profile: ClubProfile;
 };
+
+function getFirstName(name: string): string {
+  return name.trim().split(/\s+/)[0] ?? "";
+}
 
 export function formatMatchDate(date: string): string {
   const [year, month, day] = date.split("-").map(Number);
@@ -74,14 +79,15 @@ export function getMessagePlaceholderValues({
     managerMobile: profile.managerMobile,
     managerEmail: profile.managerEmail,
     oppositionName: fixture.oppositionName,
-    oppositionManager: fixture.oppositionManager,
+    oppositionManager: getFirstName(fixture.oppositionManager) || "there",
+    oppositionManagerEmail: fixture.oppositionManagerEmail ?? "",
     date: formatMatchDate(fixture.date),
     kickOffTime: fixture.kickOffTime,
     venueName: venue?.name ?? "",
     venueAddress: venue?.address ?? "",
     venueNotes: venue?.venueNotes ?? "",
     defibrillatorLocation: venue?.defibrillatorLocation ?? "",
-    refereeName: referee?.name ?? "TBC",
+    refereeName: referee ? getFirstName(referee.name) || "TBC" : "TBC",
     refereeMobile: referee?.mobileNumber ?? "",
     refereeNotes: referee?.notes ?? "",
     nearestHospital: hospital?.name ?? "",
